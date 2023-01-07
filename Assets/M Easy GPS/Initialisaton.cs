@@ -19,6 +19,14 @@ namespace MEasyGPS.Management
 
         private IEnumerator StartGPSService()
         {
+#if UNITY_ANDROID
+            if (!UnityEngine.Android.Permission.HasUserAuthorizedPermission(UnityEngine.Android.Permission.CoarseLocation))
+            {
+                UnityEngine.Android.Permission.RequestUserPermission(UnityEngine.Android.Permission.CoarseLocation);
+                StartCoroutine(StartGPSService());
+                yield break;
+            }
+#endif
             if (!Input.location.isEnabledByUser) // GPS Not Active
             {
                 Debug.Log("GPS SERVICE NOT ACTIVE!");

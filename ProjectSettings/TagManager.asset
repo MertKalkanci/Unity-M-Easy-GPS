@@ -5,6 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - DebugInfoText
+  - DebugTargetLocation
+  - DebugDirectionMagnetic
+  - DebugDirectionTrue
   layers:
   - Default
   - TransparentFX

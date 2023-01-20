@@ -70,12 +70,16 @@ public class ARMapTest : MonoBehaviour
         {
             magneticDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentMagneticHeading);
             trueDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentHeading);
-            debugText.text =
+            debugText.text = 
+                manager.IsWorking 
+                ?
                 "PlayerLat: " + Playerlatitude + "\nPlayerLon: " + Playerlongtitude +
                 "\n===================" +
                 "\nTargetLat: " + targetLatitude + "\nTargetLon: " + targetLongitude +
                 "\n===================" +
-                "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy;
+                "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy 
+                :
+                "GPS Not Working";
         }
     }
     public void DiffMeters(double originLat, double originLon, double TargetLat, double TargetLon, out double diffLatMet, out double diffLonMet)
@@ -89,10 +93,22 @@ public class ARMapTest : MonoBehaviour
 
         diffLatMet = tLatMet - oLatMet;
         diffLonMet = tLonMet - oLonMet;
-    }
+    } // also have this function in GPSObjectPlace to make scripts independent
     public void RandomiseTarget()
     {
         targetLatitude = Playerlatitude + Random.Range(9f, -9f) * 0.00001f;
         targetLongitude = Playerlongtitude + Random.Range(9f, -9f) * 0.00001f;
+
+        try
+        {
+            MEasyGPS.Miscellaneous.GPSObjectPlace gpsObject = FindObjectOfType<MEasyGPS.Miscellaneous.GPSObjectPlace>();
+
+            gpsObject.latitude = (float)targetLatitude;
+            gpsObject.longtitude = (float)targetLongitude;
+        }
+        catch
+        {
+            Debug.Log("Failed to Find GPS Object Instance");
+        }
     }
 }

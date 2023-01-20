@@ -9,12 +9,12 @@ namespace MEasyGPS.Management
     {
         public float maxWaitTime = 20;
         private float _maxWaitTime;
-        protected bool didFail;
+        public bool didFail { get; private set; }
 
-        public bool TryToStartGPSService()
+        public void TryToStartGPSService()
         {
             StartCoroutine(StartGPSService());
-            return didFail;
+            return;
         }
 
         private IEnumerator StartGPSService()

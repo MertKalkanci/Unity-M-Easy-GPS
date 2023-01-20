@@ -83,7 +83,7 @@ namespace MEasyGPS.Miscellaneous
 
             if (failed)
             {
-                Debug.Log("Didn't Instatiate Object");
+                Debug.Log("Failed To Instatiate Object");
                 yield break;
             }
 

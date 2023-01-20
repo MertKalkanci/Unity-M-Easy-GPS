@@ -15,7 +15,6 @@ namespace MEasyGPS.Miscellaneous
         public float longtitude; 
         [Space]
         [Tooltip("Instance object manually")] public bool instanceManually = false;
-        [Tooltip("Instance as a child object")] public bool instanceAsChild = false;
         [Tooltip("Update Location")] public bool updateLocationAfterInstance = false;
         [Space]
         [Tooltip("Max Wait Time To Place Instance")] public float maxWaitTimeForInitialisation = 20f;
@@ -41,8 +40,9 @@ namespace MEasyGPS.Miscellaneous
             bool tryAgain = false, failed = false;
 
 
-            while(waitTime < 0) //try to find and check manager in the wait time
+            while(waitTime > 0) //try to find and check manager in the wait time
             {
+                tryAgain = false;
                 try
                 {
                     manager = FindObjectOfType<SceneGPSManager>();
@@ -54,10 +54,18 @@ namespace MEasyGPS.Miscellaneous
                 }
 
                 if (manager && !tryAgain)
+                {
                     tryAgain = !manager.IsWorking;
 
-                if(!GPSObject && !tryAgain)
-                    tryAgain = false;
+                    if(tryAgain)
+                        Debug.Log("GPS Manager Found But Not Working");
+                }
+
+                if (!GPSObject && !tryAgain)
+                {
+                    Debug.Log("Failed to Find GPSObject");
+                    tryAgain = true;
+                }
 
 
                 if (tryAgain)
@@ -72,36 +80,35 @@ namespace MEasyGPS.Miscellaneous
             }
 
             failed = tryAgain;
-            
+
             if (failed)
+            {
+                Debug.Log("Didn't Instatiate Object");
                 yield break;
+            }
+
 
             float diffLatMet, diffLonMet;
 
-            DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
 
-            instance = instanceAsChild
-                ?
-                Instantiate(
+            this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
+
+            instance = Instantiate(
                     GPSObject,
-                    ( new Vector3(diffLonMet, diffLatMet, 0) + Camera.main.transform.position)
-                    , Quaternion.identity, this.gameObject.transform)
-                :
-                Instantiate(
-                    GPSObject,
-                    ( new Vector3(diffLonMet, diffLatMet, 0) + Camera.main.transform.position),
-                    Quaternion.identity);
+                    (new Vector3(diffLonMet, 0, diffLatMet) + Camera.main.transform.position)
+                    , Quaternion.identity, this.gameObject.transform);
+            
         }
 
         private void Update()
         {
             if(instance && updateLocationAfterInstance)
             {
-                float diffLatMet, diffLonMet;
+                float diffLatMet = 0f, diffLonMet;
 
-                DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
+                this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
 
-                instance.transform.position = (new Vector3(diffLonMet, diffLatMet, 0) + Camera.main.transform.position);
+                instance.transform.position = (new Vector3(diffLonMet, 0, diffLatMet) + Camera.main.transform.position);
             }
         }
 

@@ -61,25 +61,17 @@ public class ARMapTest : MonoBehaviour
         {
             targetTransform.anchoredPosition = new Vector3((float)diffLonMet * 10, (float)diffLatMet * 10);
         }
-        else
-        {
-            Debug.Log(diffLonMet + " , " + diffLatMet);
-        }
 
         if (debugMode != DebugMode.Editor)
         {
             magneticDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentMagneticHeading);
             trueDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentHeading);
-            debugText.text = 
-                manager.IsWorking 
-                ?
+            debugText.text =
                 "PlayerLat: " + Playerlatitude + "\nPlayerLon: " + Playerlongtitude +
                 "\n===================" +
                 "\nTargetLat: " + targetLatitude + "\nTargetLon: " + targetLongitude +
                 "\n===================" +
-                "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy 
-                :
-                "GPS Not Working";
+                "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy;
         }
     }
     public void DiffMeters(double originLat, double originLon, double TargetLat, double TargetLon, out double diffLatMet, out double diffLonMet)

@@ -452,9 +452,8 @@ MonoBehaviour:
   latitude: 0
   longtitude: 0
   instanceManually: 0
-  instanceAsChild: 0
   updateLocationAfterInstance: 1
-  maxWaitTimeForInitialisation: 20
+  maxWaitTimeForInitialisation: 5
   latitudeMeterConstant: 111320
 --- !u!1 &282372142
 GameObject:
@@ -650,7 +649,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 388525029}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -1555,8 +1554,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 630fa197769f0c14d9e13605e9277c79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  latitude: 0
-  longtitude: 0
+  latitude: 1
+  longtitude: 1
   altitude: 0
   horizontalAccuracy: 0
   magneticHeading: 0

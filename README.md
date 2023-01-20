@@ -1,7 +1,15 @@
 # Unity-Easy-GPS
-Unity Easier GPS Asset
+
+## Description
+Unity-Easy-GPS is an asset to use GPS easier and simplier. Features GPS Object placing etc.
+
+## Give a Star! ⭐
+Feel free to request an issue on github if you find bugs or request a new feature. 
+If you find this useful, please give it a star to show your support for this project.
+
+## Project Unity Version
 
 Compatible with Unity2022.1.8f1 and up
 
-download the project for examples or download M Easy GPS Folder to use t directly.
+download the project for examples or download "M Easy GPS" Folder to use it directly.
 

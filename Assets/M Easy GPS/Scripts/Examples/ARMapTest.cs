@@ -87,7 +87,7 @@ public class ARMapTest : MonoBehaviour
     public void RandomiseTarget()
     {
         targetLatitude = Playerlatitude + Random.Range(9f, -9f) * 0.00001f;
-        targetLongitude = Playerlongtitude + Random.Range(9f, -9f) * 0.00001f;
+        targetLongitude = Playerlongtitude + Random.Range(8.7f, -8.7f) * 0.00001f;
 
         try
         {

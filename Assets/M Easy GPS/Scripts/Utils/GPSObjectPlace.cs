@@ -11,6 +11,9 @@ namespace MEasyGPS.Utils
 
         public GameObject GPSObject;
         [Space]
+        public float smoothingFast = 3f;
+        public float smoothingSlow = 0.1f;
+        [Space]
         public float latitude; // write like this to preventing the space between this two
         public float longtitude; 
         [Space]
@@ -88,11 +91,6 @@ namespace MEasyGPS.Utils
                     if (tryAgain)
                         Debug.Log("GPS Manager Found But Not Working");
                 }
-#if UNITY_EDITOR // to test object placement
-                tryAgain = false;
-                break;
-#endif
-
 
                 if (tryAgain)
                 {
@@ -103,11 +101,14 @@ namespace MEasyGPS.Utils
                 {
                     break;
                 }
+
+#if UNITY_EDITOR // to test object placement
+                tryAgain = false;
+                break;
+#endif
             }
 
             failed = tryAgain;
-
-
 
             if (failed)
             {
@@ -125,7 +126,10 @@ namespace MEasyGPS.Utils
 
             float diffLatMet, diffLonMet;
 
-            this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
+            DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
+
+            // in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin with 
+            // RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform);
 
             instance = Instantiate(GPSObject, RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform), Quaternion.identity, this.gameObject.transform);
         }
@@ -138,11 +142,24 @@ namespace MEasyGPS.Utils
 
                 this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
 
-                //in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin
+                // in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin with 
+                // RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform);
 
-                
+                Vector3 newLocation = RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform);
+                Vector3 oldPosition = instance.transform.position;
 
-                instance.transform.position = RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform);
+                instance.transform.position = Vector3.Distance(newLocation, oldPosition) > 0.5f ?
+                    Vector3.Lerp(
+                    oldPosition,
+                    newLocation,
+                    Time.deltaTime * smoothingFast
+                    )
+                    :
+                    Vector3.Lerp(
+                    oldPosition,
+                    newLocation,
+                    Time.deltaTime * smoothingSlow
+                    );
 
                 if (debugMode != DebugMode.None)
                 {

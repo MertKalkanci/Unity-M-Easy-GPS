@@ -449,6 +449,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   GPSObject: {fileID: 8676427524624317165, guid: 05daed11d1b2ae04b8c12f8c05dd17c1,
     type: 3}
+  smoothingFast: 4
+  smoothingSlow: 0.4
   latitude: 0
   longtitude: 0
   instanceManually: 0
@@ -1669,9 +1671,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 630fa197769f0c14d9e13605e9277c79, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  latitude: 1
-  longtitude: 1
-  altitude: 0
+  latitude: 99
+  longtitude: 99
+  altitude: 99
   horizontalAccuracy: 0
   magneticHeading: 0
   trueHeading: 0

@@ -9,7 +9,6 @@ namespace MEasyGPS.Management
     [RequireComponent(typeof(Initialisaton))]
     public class SceneGPSManager : MonoBehaviour
     {
-        public bool IsWorking { get; private set; }
         public float latitude, longtitude, altitude, horizontalAccuracy,
             magneticHeading, trueHeading, headingAccuracy;
         [Tooltip("Experimental location update ping")] public float locationPing;
@@ -35,7 +34,6 @@ namespace MEasyGPS.Management
         {
             if (init && !init.didFail)
                 UpdateLocation();
-            IsWorking = !init.didFail;
         }
         private void UpdateLocation()
         {

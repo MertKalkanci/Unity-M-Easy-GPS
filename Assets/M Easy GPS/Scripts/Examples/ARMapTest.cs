@@ -2,19 +2,13 @@ using MEasyGPS.Management;
 using TMPro;
 using UnityEngine;
 
-public enum DebugMode
-{
-    Editor,
-    Info,
-    None
-}
-
 public class ARMapTest : MonoBehaviour
 {
     private SceneGPSManager manager;
     private TMP_Text debugText;
     private RectTransform targetTransform, magneticDirectionTransform, trueDirectionTransform;
     public double Playerlatitude, Playerlongtitude, CurrentHeading, CurrentMagneticHeading, CurrentAccuracy;
+    public float ping;
 
     [Space]
 
@@ -42,13 +36,14 @@ public class ARMapTest : MonoBehaviour
 
     void Update()
     {
-        if (debugMode != DebugMode.Editor)
+        if (debugMode == DebugMode.Info)
         {
             CurrentHeading = manager.trueHeading;
             CurrentMagneticHeading = manager.magneticHeading;
             CurrentAccuracy = manager.headingAccuracy;
             Playerlatitude = manager.latitude;
             Playerlongtitude = manager.longtitude;
+            ping = manager.locationPing;
         }
 
         //Hesaplamalar
@@ -71,7 +66,10 @@ public class ARMapTest : MonoBehaviour
                 "\n===================" +
                 "\nTargetLat: " + targetLatitude + "\nTargetLon: " + targetLongitude +
                 "\n===================" +
-                "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy;
+                "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy +
+                "\n===================" +
+                "\nLocationPing: " + ping
+                ;
         }
     }
     public void DiffMeters(double originLat, double originLon, double TargetLat, double TargetLon, out double diffLatMet, out double diffLonMet)

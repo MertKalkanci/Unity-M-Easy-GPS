@@ -1,13 +1,19 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+public enum DebugMode
+{
+    Editor,
+    Info,
+    None
+}
 
 namespace MEasyGPS.Management
 {
     
     public class Initialisaton : MonoBehaviour
     {
-        public float maxWaitTime = 20;
+        [Tooltip("Maximum wait time to wait gps service initialisation (seconds)")]  public float maxWaitTime = 20;
         private float _maxWaitTime;
         public bool didFail { get; private set; }
 
@@ -38,10 +44,11 @@ namespace MEasyGPS.Management
                 yield break;
             }
 
-            Input.compass.enabled = true;
 
             //start location service before querying location
-            Input.location.Start();
+            Input.location.Start(6f,6f);
+
+            Input.compass.enabled = true;
 
             _maxWaitTime = maxWaitTime; // set max time
 
@@ -51,7 +58,7 @@ namespace MEasyGPS.Management
                 _maxWaitTime--;
             }
 
-            if(_maxWaitTime <= 0)
+            if(_maxWaitTime < 0)
             {
                 Debug.Log("GPS SERVICE DIDN'T INITALIZED IN TIME!");
                 didFail = true;
@@ -69,6 +76,13 @@ namespace MEasyGPS.Management
                 yield break;
             }
 
+        }
+        private void Update()
+        {
+            if(Input.location.status == LocationServiceStatus.Initializing || Input.location.status == LocationServiceStatus.Running)
+            {
+                didFail = false;
+            }
         }
     }
 }

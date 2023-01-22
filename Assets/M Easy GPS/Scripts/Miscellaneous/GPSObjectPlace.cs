@@ -15,15 +15,21 @@ namespace MEasyGPS.Miscellaneous
         public float longtitude; 
         [Space]
         [Tooltip("Instance object manually")] public bool instanceManually = false;
-        [Tooltip("Update Location")] public bool updateLocationAfterInstance = false;
+        [Tooltip("Update location of instance")] public bool updateLocationAfterInstance = false;
         [Space]
-        [Tooltip("Max Wait Time To Place Instance")] public float maxWaitTimeForInitialisation = 20f;
+        [Tooltip("Maximum wait time to place instance (seconds)")] public float maxWaitTimeForInitialisation = 20f;
         [Space]
-        [SerializeField] private double latitudeMeterConstant = 111320;
-
+        [Tooltip("Don't change this value if you arent in a differnt planet or working on some experimental features")]  [SerializeField] private double latitudeMeterConstant = 111320;
+        [Space]
+        [SerializeField] private DebugMode debugMode = DebugMode.None;
+        [SerializeField] private string debugTextTag = "DebugInfoTextMiscellaneous";
+        private TMPro.TMP_Text debugText;
 
         private void Awake()
         {
+            if (debugMode != DebugMode.None)
+                debugText = GameObject.FindGameObjectWithTag(debugTextTag).GetComponent<TMPro.TMP_Text>();
+
             if(!instanceManually)
                 Instance();
         }
@@ -37,12 +43,16 @@ namespace MEasyGPS.Miscellaneous
         private IEnumerator InstanceWork()
         {
             float waitTime = maxWaitTimeForInitialisation;
-            bool tryAgain = false, failed = false;
+            bool tryAgain = false, failed = false,isLocationServiceRunning = false;
 
 
-            while(waitTime > 0) //try to find and check manager in the wait time
+            #region Check Availability
+
+            while (waitTime > 0) //try to find and check manager in the wait time
             {
                 tryAgain = false;
+                isLocationServiceRunning = Input.location.status == LocationServiceStatus.Running;
+
                 try
                 {
                     manager = FindObjectOfType<SceneGPSManager>();
@@ -50,21 +60,33 @@ namespace MEasyGPS.Miscellaneous
                 catch
                 {
                     Debug.Log("Failed to Find SceneGPSManager");
+
+                    if (debugMode != DebugMode.None)
+                        debugText.text = "Failed to Find SceneGPSManager";
+
                     tryAgain = true;
-                }
-
-                if (manager && !tryAgain)
-                {
-                    tryAgain = !manager.IsWorking;
-
-                    if(tryAgain)
-                        Debug.Log("GPS Manager Found But Not Working");
                 }
 
                 if (!GPSObject && !tryAgain)
                 {
                     Debug.Log("Failed to Find GPSObject");
+
+                    if (debugMode != DebugMode.None)
+                        debugText.text = "Failed to Find GPSObject";
+
                     tryAgain = true;
+                }
+
+                
+                if (manager && !tryAgain)
+                {
+                    tryAgain = !isLocationServiceRunning;
+
+                    if (debugMode != DebugMode.None)
+                        debugText.text = "IS GPS MANAGER WORKING: " + isLocationServiceRunning;
+
+                    if (tryAgain)
+                        Debug.Log("GPS Manager Found But Not Working");
                 }
 
 
@@ -81,23 +103,44 @@ namespace MEasyGPS.Miscellaneous
 
             failed = tryAgain;
 
+            
+
             if (failed)
             {
                 Debug.Log("Failed To Instatiate Object");
+
+                if (debugMode != DebugMode.None)
+                {
+                    debugText.text = "Failed To Instatiate Object";
+                }
+
                 yield break;
             }
 
+            #endregion
 
             float diffLatMet, diffLonMet;
 
-
             this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
 
-            instance = Instantiate(
-                    GPSObject,
-                    (new Vector3(diffLonMet, 0, diffLatMet) + Camera.main.transform.position)
-                    , Quaternion.identity, this.gameObject.transform);
-            
+            //in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin
+
+            float diffrenceToRotateDegrees = Camera.main.transform.rotation.eulerAngles.y - manager.trueHeading;
+            float diffrenceToRotateRadians = Mathf.Deg2Rad* diffrenceToRotateDegrees;
+
+            Vector3 rawPosition = new Vector3(diffLonMet, 0, diffLatMet);
+            Vector3 cameraPosition = Camera.main.transform.position;
+
+            Vector3 rotatedPosition = new Vector3
+                (Mathf.Cos(diffrenceToRotateRadians) * rawPosition.x - Mathf.Sin(diffrenceToRotateRadians) * rawPosition.z,
+                0,
+                Mathf.Sin(diffrenceToRotateRadians) * rawPosition.x + Mathf.Cos(diffrenceToRotateRadians) * rawPosition.z)
+                
+                +
+                
+                cameraPosition;
+
+            instance = Instantiate(GPSObject, rotatedPosition, Quaternion.identity, this.gameObject.transform);
         }
 
         private void Update()
@@ -108,7 +151,29 @@ namespace MEasyGPS.Miscellaneous
 
                 this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
 
-                instance.transform.position = (new Vector3(diffLonMet, 0, diffLatMet) + Camera.main.transform.position);
+                //in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin
+
+                float diffrenceToRotateDegrees = Camera.main.transform.rotation.eulerAngles.y - manager.trueHeading;
+                float diffrenceToRotateRadians = Mathf.Deg2Rad * diffrenceToRotateDegrees;
+
+                Vector3 rawPosition = new Vector3(diffLonMet, 0, diffLatMet);
+                Vector3 cameraPosition = Camera.main.transform.position;
+
+                Vector3 rotatedPosition = new Vector3
+                (Mathf.Cos(diffrenceToRotateRadians) * rawPosition.x - Mathf.Sin(diffrenceToRotateRadians) * rawPosition.z,
+                0,
+                Mathf.Sin(diffrenceToRotateRadians) * rawPosition.x + Mathf.Cos(diffrenceToRotateRadians) * rawPosition.z)
+
+                +
+
+                cameraPosition;
+
+                instance.transform.position = rotatedPosition;
+
+                if(debugMode != DebugMode.None)
+                {
+                    debugText.text = "CameraPos:\n" + Camera.main.transform.position + "\n" + "TargetPos:\n" + instance.transform.position;
+                }
             }
         }
 

@@ -91,7 +91,7 @@ public class ARMapTest : MonoBehaviour
 
         try
         {
-            MEasyGPS.Miscellaneous.GPSObjectPlace gpsObject = FindObjectOfType<MEasyGPS.Miscellaneous.GPSObjectPlace>();
+            MEasyGPS.Utils.GPSObjectPlace gpsObject = FindObjectOfType<MEasyGPS.Utils.GPSObjectPlace>();
 
             gpsObject.latitude = (float)targetLatitude;
             gpsObject.longtitude = (float)targetLongitude;

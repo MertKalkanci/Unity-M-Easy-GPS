@@ -2,7 +2,7 @@ using MEasyGPS.Management;
 using UnityEngine;
 using System.Collections;
 
-namespace MEasyGPS.Miscellaneous
+namespace MEasyGPS.Utils
 {
     public class GPSObjectPlace : MonoBehaviour
     {
@@ -88,6 +88,10 @@ namespace MEasyGPS.Miscellaneous
                     if (tryAgain)
                         Debug.Log("GPS Manager Found But Not Working");
                 }
+#if UNITY_EDITOR // to test object placement
+                tryAgain = false;
+                break;
+#endif
 
 
                 if (tryAgain)
@@ -103,7 +107,7 @@ namespace MEasyGPS.Miscellaneous
 
             failed = tryAgain;
 
-            
+
 
             if (failed)
             {
@@ -117,30 +121,13 @@ namespace MEasyGPS.Miscellaneous
                 yield break;
             }
 
-            #endregion
+#endregion
 
             float diffLatMet, diffLonMet;
 
             this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
 
-            //in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin
-
-            float diffrenceToRotateDegrees = Camera.main.transform.rotation.eulerAngles.y - manager.trueHeading;
-            float diffrenceToRotateRadians = Mathf.Deg2Rad* diffrenceToRotateDegrees;
-
-            Vector3 rawPosition = new Vector3(diffLonMet, 0, diffLatMet);
-            Vector3 cameraPosition = Camera.main.transform.position;
-
-            Vector3 rotatedPosition = new Vector3
-                (Mathf.Cos(diffrenceToRotateRadians) * rawPosition.x - Mathf.Sin(diffrenceToRotateRadians) * rawPosition.z,
-                0,
-                Mathf.Sin(diffrenceToRotateRadians) * rawPosition.x + Mathf.Cos(diffrenceToRotateRadians) * rawPosition.z)
-                
-                +
-                
-                cameraPosition;
-
-            instance = Instantiate(GPSObject, rotatedPosition, Quaternion.identity, this.gameObject.transform);
+            instance = Instantiate(GPSObject, RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform), Quaternion.identity, this.gameObject.transform);
         }
 
         private void Update()
@@ -153,28 +140,36 @@ namespace MEasyGPS.Miscellaneous
 
                 //in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin
 
-                float diffrenceToRotateDegrees = Camera.main.transform.rotation.eulerAngles.y - manager.trueHeading;
-                float diffrenceToRotateRadians = Mathf.Deg2Rad * diffrenceToRotateDegrees;
+                
 
-                Vector3 rawPosition = new Vector3(diffLonMet, 0, diffLatMet);
-                Vector3 cameraPosition = Camera.main.transform.position;
+                instance.transform.position = RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform);
 
-                Vector3 rotatedPosition = new Vector3
-                (Mathf.Cos(diffrenceToRotateRadians) * rawPosition.x - Mathf.Sin(diffrenceToRotateRadians) * rawPosition.z,
-                0,
-                Mathf.Sin(diffrenceToRotateRadians) * rawPosition.x + Mathf.Cos(diffrenceToRotateRadians) * rawPosition.z)
-
-                +
-
-                cameraPosition;
-
-                instance.transform.position = rotatedPosition;
-
-                if(debugMode != DebugMode.None)
+                if (debugMode != DebugMode.None)
                 {
                     debugText.text = "CameraPos:\n" + Camera.main.transform.position + "\n" + "TargetPos:\n" + instance.transform.position;
                 }
             }
+        }
+
+        private Vector3 RotateVectorForCordinateSystem(float diffLonMet,float diffLatMet, float trueHeading, Transform CameraTransform) 
+        {
+            //in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin
+
+            float diffrenceToRotateDegrees = trueHeading - CameraTransform.rotation.eulerAngles.y;
+            float diffrenceToRotateRadians = Mathf.Deg2Rad * diffrenceToRotateDegrees;
+
+            Vector3 rawPosition = new Vector3(diffLonMet, 0, diffLatMet);
+            Vector3 cameraPosition = CameraTransform.position;
+
+            Vector3 rotatedPosition = 
+                new Vector3
+            (Mathf.Cos(diffrenceToRotateRadians) * rawPosition.x - Mathf.Sin(diffrenceToRotateRadians) * rawPosition.z,
+            0,
+            Mathf.Sin(diffrenceToRotateRadians) * rawPosition.x + Mathf.Cos(diffrenceToRotateRadians) * rawPosition.z)
+            +
+            cameraPosition;
+
+            return rotatedPosition;
         }
 
         private void DiffMeters(double originLat, double originLon, double TargetLat, double TargetLon, out float diffLatMet, out float diffLonMet) 
@@ -190,5 +185,6 @@ namespace MEasyGPS.Miscellaneous
             diffLonMet = (float)(tLonMet - oLonMet);
         } // also have this function in ARMapTest to make scripts independent
 
+        
     }
 }

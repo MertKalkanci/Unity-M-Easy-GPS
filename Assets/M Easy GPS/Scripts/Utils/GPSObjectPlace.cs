@@ -4,21 +4,27 @@ using System.Collections;
 
 namespace MEasyGPS.Utils
 {
+    public enum ObjectAltiitude
+    {
+        RelativeToCamera,
+        Static
+    }
     public class GPSObjectPlace : MonoBehaviour
     {
         private SceneGPSManager manager;
         private GameObject instance;
 
+        public ObjectAltiitude GameObjectAltitude = ObjectAltiitude.Static;
         public GameObject GPSObject;
         [Space]
         public float smoothingFast = 3f;
         public float smoothingSlow = 0.1f;
         [Space]
-        public float latitude; // write like this to preventing the space between this two
-        public float longtitude; 
+        public double latitude; // write like this to preventing the space between this two
+        public double longtitude; 
         [Space]
         [Tooltip("Instance object manually")] public bool instanceManually = false;
-        [Tooltip("Update location of instance")] public bool updateLocationAfterInstance = false;
+        [Tooltip("Update location of instance")] public bool changeLocationAfterInstatiate = false;
         [Space]
         [Tooltip("Maximum wait time to place instance (seconds)")] public float maxWaitTimeForInitialisation = 20f;
         [Space]
@@ -27,6 +33,8 @@ namespace MEasyGPS.Utils
         [SerializeField] private DebugMode debugMode = DebugMode.None;
         [SerializeField] private string debugTextTag = "DebugInfoTextMiscellaneous";
         private TMPro.TMP_Text debugText;
+
+        private double _latitude, _longtitude;
 
         private void Awake()
         {
@@ -39,6 +47,8 @@ namespace MEasyGPS.Utils
 
         public void Instance()
         {
+            _latitude = latitude;
+            _longtitude = longtitude;
             if (instance)
                 return;
             StartCoroutine(InstanceWork());
@@ -126,7 +136,7 @@ namespace MEasyGPS.Utils
 
             float diffLatMet, diffLonMet;
 
-            DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
+            DiffMeters(manager.latitude, manager.longtitude, _latitude, _longtitude, out diffLatMet, out diffLonMet);
 
             // in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin with 
             // RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform);
@@ -136,11 +146,16 @@ namespace MEasyGPS.Utils
 
         private void Update()
         {
-            if(instance && updateLocationAfterInstance)
+            if(changeLocationAfterInstatiate)
+            {
+                _latitude = latitude;
+                _longtitude = longtitude;
+            }
+            if(instance)
             {
                 float diffLatMet = 0f, diffLonMet;
 
-                this.DiffMeters(manager.latitude, manager.longtitude, latitude, longtitude, out diffLatMet, out diffLonMet);
+                this.DiffMeters(manager.latitude, manager.longtitude, _latitude, _longtitude, out diffLatMet, out diffLonMet);
 
                 // in start Ar Session rotates the game world towards the angle player looks to solve it we must rotate the object realtive to the session origin with 
                 // RotateVectorForCordinateSystem(diffLonMet, diffLatMet, manager.trueHeading, Camera.main.transform);
@@ -178,13 +193,16 @@ namespace MEasyGPS.Utils
             Vector3 rawPosition = new Vector3(diffLonMet, 0, diffLatMet);
             Vector3 cameraPosition = CameraTransform.position;
 
-            Vector3 rotatedPosition = 
-                new Vector3
-            (Mathf.Cos(diffrenceToRotateRadians) * rawPosition.x - Mathf.Sin(diffrenceToRotateRadians) * rawPosition.z,
-            0,
-            Mathf.Sin(diffrenceToRotateRadians) * rawPosition.x + Mathf.Cos(diffrenceToRotateRadians) * rawPosition.z)
-            +
-            cameraPosition;
+            Vector3 rotatedPosition =
+            new Vector3
+                (Mathf.Cos(diffrenceToRotateRadians) * rawPosition.x - Mathf.Sin(diffrenceToRotateRadians) * rawPosition.z,
+                0,
+                Mathf.Sin(diffrenceToRotateRadians) * rawPosition.x + Mathf.Cos(diffrenceToRotateRadians) * rawPosition.z)
+                +
+            new Vector3(
+                cameraPosition.x,
+                GameObjectAltitude == ObjectAltiitude.Static ? transform.position.y : cameraPosition.y,
+                cameraPosition.z);
 
             return rotatedPosition;
         }

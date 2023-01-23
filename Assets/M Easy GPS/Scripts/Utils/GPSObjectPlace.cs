@@ -17,8 +17,8 @@ namespace MEasyGPS.Utils
         public ObjectAltiitude GameObjectAltitude = ObjectAltiitude.Static;
         public GameObject GPSObject;
         [Space]
-        public float smoothingFast = 3f;
-        public float smoothingSlow = 0.1f;
+        public float smoothingFast = 4f;
+        public float smoothingSlow = 0.4f;
         [Space]
         public double latitude; // write like this to preventing the space between this two
         public double longtitude; 

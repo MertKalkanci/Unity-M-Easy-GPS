@@ -295,6 +295,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 406824e2ab50b1e4980aaede542aeb82, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  GameObjectAltitude: 1
   GPSObject: {fileID: 8676427524624317165, guid: 05daed11d1b2ae04b8c12f8c05dd17c1,
     type: 3}
   smoothingFast: 4
@@ -515,6 +516,11 @@ PrefabInstance:
     serializedVersion: 2
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 205924810413291790, guid: 80dbbc3cf5122bb4187c220503b316e8,
+        type: 3}
+      propertyPath: m_MatchWidthOrHeight
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 205924811641999396, guid: 80dbbc3cf5122bb4187c220503b316e8,
         type: 3}
       propertyPath: m_Name

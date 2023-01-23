@@ -1,5 +1,5 @@
 using System.Collections;
-using System.Collections.Generic;
+using UnityEngine.Android;
 using UnityEngine;
 public enum DebugMode
 {
@@ -25,12 +25,10 @@ namespace MEasyGPS.Management
 
         private IEnumerator StartGPSService()
         {
-#if UNITY_ANDROID
-            if (!UnityEngine.Android.Permission.HasUserAuthorizedPermission(UnityEngine.Android.Permission.CoarseLocation))
-            {
-                UnityEngine.Android.Permission.RequestUserPermission(UnityEngine.Android.Permission.CoarseLocation);
-            }
-#endif
+            didFail = false;
+
+            RequestPermissionAndroid();
+
             if (!Input.location.isEnabledByUser) // GPS Not Active
             {
                 Debug.Log("GPS SERVICE NOT ACTIVE!");
@@ -83,6 +81,28 @@ namespace MEasyGPS.Management
             {
                 didFail = false;
             }
+            else if (didFail)
+            {
+                if (Input.location.isEnabledByUser)
+                {
+                    didFail = false;
+                    TryToStartGPSService();
+                }
+                else
+                {
+                    RequestPermissionAndroid();
+                }
+            }
+        }
+        private void RequestPermissionAndroid()
+        {
+#if UNITY_ANDROID
+            if (!Permission.HasUserAuthorizedPermission(UnityEngine.Android.Permission.CoarseLocation))
+            {
+                Permission.RequestUserPermission(UnityEngine.Android.Permission.CoarseLocation);
+            }
+#endif
+            return;
         }
     }
 }

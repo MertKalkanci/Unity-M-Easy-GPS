@@ -10,7 +10,7 @@ Unity-Easy-GPS is an asset to use GPS easier and simplier. Features GPS Object p
 - AR Objects Placed With GPS Location
 - Easy Access To GPS Coordinates & Magnetic/True Heading
 
-## Give a Star ! ⭐
+## Give it a Star ! ⭐
 Feel free to request an issue on github if you find bugs or request a new feature. 
 If you find this useful, please give it a star to show your support for this project.
 

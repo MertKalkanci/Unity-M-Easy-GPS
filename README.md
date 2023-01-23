@@ -16,7 +16,7 @@ If you find this useful, please give it a star to show your support for this pro
 
 ## Project Unity Version
 
-Compatible with Unity2022.1.8f1 and up
+Project version is Unity2022.1.8f1 but "M Easy GPS" API is compatible with Unity 2021 and up
 
 download the project for examples or download "M Easy GPS" Folder to use it directly.
 

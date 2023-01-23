@@ -1,4 +1,4 @@
-# Unity-Easy-GPS
+# M-Easy-GPS
 
 ## Description
 Unity-Easy-GPS is an asset to use GPS easier and simplier. Features GPS Object placing etc.

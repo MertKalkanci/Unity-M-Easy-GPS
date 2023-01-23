@@ -1,16 +1,16 @@
 using System.Collections;
 using UnityEngine.Android;
 using UnityEngine;
-public enum DebugMode
-{
-    Editor,
-    Info,
-    None
-}
+
 
 namespace MEasyGPS.Management
 {
-    
+    public enum DebugMode
+    {
+        Editor,
+        Info,
+        None
+    }
     public class Initialisaton : MonoBehaviour
     {
         public bool didFail { get; private set; }

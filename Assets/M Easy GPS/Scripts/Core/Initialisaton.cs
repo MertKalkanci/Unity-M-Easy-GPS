@@ -13,9 +13,23 @@ namespace MEasyGPS.Management
     
     public class Initialisaton : MonoBehaviour
     {
-        [Tooltip("Maximum wait time to wait gps service initialisation (seconds)")]  public float maxWaitTime = 20;
-        private float _maxWaitTime;
         public bool didFail { get; private set; }
+
+        [Tooltip("Maximum wait time to wait gps service initialisation (seconds)")] [Range(1, 10)] public float maxWaitTime = 5f;
+        [Tooltip("Maximum wait time to retry to initialise gps service (seconds)")]  [SerializeField] [Range(5, 15)] private float retryTime = 10f;
+
+        private float _maxWaitTime, _retryTime;
+
+        private void Awake()
+        {
+            if(retryTime < maxWaitTime) //to prevent overloading
+            {
+                maxWaitTime = 5;
+                retryTime = 10;
+            }
+            _maxWaitTime = maxWaitTime;
+            _retryTime = retryTime;
+        }
 
         public void TryToStartGPSService()
         {
@@ -27,7 +41,12 @@ namespace MEasyGPS.Management
         {
             didFail = false;
 
-            RequestPermissionAndroid();
+#if UNITY_ANDROID
+            if (!Permission.HasUserAuthorizedPermission(Permission.FineLocation))
+            {
+                Permission.RequestUserPermission(Permission.FineLocation);
+            }
+#endif
 
             if (!Input.location.isEnabledByUser) // GPS Not Active
             {
@@ -83,26 +102,14 @@ namespace MEasyGPS.Management
             }
             else if (didFail)
             {
-                if (Input.location.isEnabledByUser)
+                _retryTime -= Time.deltaTime;
+
+                if(_retryTime < 0)
                 {
-                    didFail = false;
+                    _retryTime = retryTime;
                     TryToStartGPSService();
                 }
-                else
-                {
-                    RequestPermissionAndroid();
-                }
             }
-        }
-        private void RequestPermissionAndroid()
-        {
-#if UNITY_ANDROID
-            if (!Permission.HasUserAuthorizedPermission(UnityEngine.Android.Permission.CoarseLocation))
-            {
-                Permission.RequestUserPermission(UnityEngine.Android.Permission.CoarseLocation);
-            }
-#endif
-            return;
         }
     }
 }

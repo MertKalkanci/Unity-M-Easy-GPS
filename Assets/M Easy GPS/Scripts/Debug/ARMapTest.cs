@@ -7,13 +7,16 @@ namespace MEasyGPS.Utils
     public class ARMapTest : MonoBehaviour
     {
         private SceneGPSManager manager;
+        private GPSObjectPlace[] objectPlacers;
         private TMP_Text debugText;
-        private RectTransform targetTransform, magneticDirectionTransform, trueDirectionTransform;
+        private RectTransform magneticDirectionTransform, trueDirectionTransform;
+        private RectTransform[] targetTransforms;
         public double Playerlatitude, Playerlongtitude, CurrentHeading, CurrentMagneticHeading, CurrentAccuracy;
         public float ping;
 
         [Space]
 
+        [SerializeField] private GameObject TargetPositionUI;
         [SerializeField] private DebugMode debugMode;
         [SerializeField] private double latitudeMeterConstant = 111320;
         [SerializeField] private double targetLatitude, targetLongitude;
@@ -23,21 +26,32 @@ namespace MEasyGPS.Utils
         {
             manager = FindObjectOfType<SceneGPSManager>();
             debugText = GameObject.FindGameObjectWithTag(DebugTextTag).GetComponent<TMP_Text>();
-            targetTransform = GameObject.FindGameObjectWithTag(TargetTag).GetComponent<RectTransform>();
             trueDirectionTransform = GameObject.FindGameObjectWithTag(DirectionTrueTag).GetComponent<RectTransform>();
             magneticDirectionTransform = GameObject.FindGameObjectWithTag(DirectionMagneticTag).GetComponent<RectTransform>();
 
-            if (targetTransform == null || trueDirectionTransform == null || magneticDirectionTransform == null || debugText == null)
+            if (trueDirectionTransform == null || magneticDirectionTransform == null || debugText == null)
             {
                 Debug.Log("Error Finding Target transforms found with tag: ' " + TargetTag + " ' , Destroying This Script Instance...");
                 Destroy(this);
             }
 
-            RandomiseTarget();
+            objectPlacers = FindObjectsOfType<GPSObjectPlace>();
+
+            targetTransforms = new RectTransform[objectPlacers.Length];
+            for (int i = 0; i < objectPlacers.Length; i++)
+            {
+                targetTransforms[i] = Instantiate(TargetPositionUI, trueDirectionTransform.parent).GetComponent<RectTransform>();
+            }
+
+            targetLatitude = objectPlacers[0].latitude;
+            targetLongitude = objectPlacers[0].longtitude;
         }
 
         void Update()
         {
+            if (debugMode == DebugMode.None)
+                return;
+
             if (debugMode == DebugMode.Info)
             {
                 CurrentHeading = manager.trueHeading;
@@ -49,30 +63,29 @@ namespace MEasyGPS.Utils
             }
 
             //Hesaplamalar
-
-            double diffLatMet, diffLonMet;
-
-            DiffMeters(Playerlatitude, Playerlongtitude, targetLatitude, targetLongitude, out diffLatMet, out diffLonMet);
-
-            if (Mathf.Abs((float)diffLatMet) < 30 && Mathf.Abs((float)diffLonMet) < 30)
+            for (int i = 0; i < objectPlacers.Length; i++)
             {
-                targetTransform.anchoredPosition = new Vector3((float)diffLonMet * 10, (float)diffLatMet * 10);
+                double diffLatMet, diffLonMet;
+
+                DiffMeters(Playerlatitude, Playerlongtitude, objectPlacers[i].latitude, objectPlacers[i].longtitude, out diffLatMet, out diffLonMet);
+
+                if (Mathf.Abs((float)diffLatMet) < 100 && Mathf.Abs((float)diffLonMet) < 100)
+                {
+                    targetTransforms[i].anchoredPosition = new Vector3((float)diffLonMet, (float)diffLatMet);
+                }
             }
 
-            if (debugMode != DebugMode.Editor)
-            {
-                magneticDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentMagneticHeading);
-                trueDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentHeading);
-                debugText.text =
-                    "PlayerLat: " + Playerlatitude + "\nPlayerLon: " + Playerlongtitude +
-                    "\n===================" +
-                    "\nTargetLat: " + targetLatitude + "\nTargetLon: " + targetLongitude +
-                    "\n===================" +
-                    "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy +
-                    "\n===================" +
-                    "\nLocationPing: " + ping
-                    ;
-            }
+            magneticDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentMagneticHeading);
+            trueDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentHeading);
+            debugText.text =
+                "PlayerLat: " + Playerlatitude + "\nPlayerLon: " + Playerlongtitude +
+                "\n===================" +
+                "\nTargetLat: " + targetLatitude + "\nTargetLon: " + targetLongitude +
+                "\n===================" +
+                "\nMagneticDir: " + CurrentMagneticHeading + "\nTrueDir: " + CurrentHeading + "\nAccuracy: " + CurrentAccuracy +
+                "\n===================" +
+                "\nLocationPing: " + ping
+                ;
         }
         public void DiffMeters(double originLat, double originLon, double TargetLat, double TargetLon, out double diffLatMet, out double diffLonMet)
         {
@@ -93,10 +106,8 @@ namespace MEasyGPS.Utils
 
             try
             {
-                MEasyGPS.Utils.GPSObjectPlace gpsObject = FindObjectOfType<MEasyGPS.Utils.GPSObjectPlace>();
-
-                gpsObject.latitude = (float)targetLatitude;
-                gpsObject.longtitude = (float)targetLongitude;
+                objectPlacers[0].latitude = (float)targetLatitude;
+                objectPlacers[0].longtitude = (float)targetLongitude;
             }
             catch
             {

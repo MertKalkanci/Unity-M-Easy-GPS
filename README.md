@@ -17,10 +17,9 @@ If you find this useful, please give it a star to show your support for this pro
 ## Project Unity Version
 
 Project version is Unity2022.1.8f1 but "M Easy GPS" API is compatible with Unity 2021 and up
-
-download the project for examples or download "M Easy GPS" Folder to use it directly.
+Download the project to build and try or download "M Easy GPS" Folder to use it with examples on your own project.
 
 ## Try The Samples !
 
-Build the project, don't forget to add GPSObjectPlacement scene to active scenes. After giving permissions to app restart it to try.
+Build the project, don't forget to add GPSObjectPlacement scene to active scenes. If the demo not works after giving permissions, restart the app to try.
 

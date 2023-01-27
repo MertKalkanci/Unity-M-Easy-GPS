@@ -5,6 +5,13 @@ using UnityEngine;
 
 namespace MEasyGPS.Management
 {
+    public enum GPSPrecisionSetting
+    {
+        ExtremelyPrecise,   // 2 meters
+        Precise,            // 6 meters
+        Normal,             // 10 meters
+        BatterySaveMode,    // 20 meters
+    }
     public enum DebugMode
     {
         Editor,
@@ -15,6 +22,12 @@ namespace MEasyGPS.Management
     {
         public bool didFail { get; private set; }
 
+        [Tooltip("GPS Precision Settings \nWarning: Extremely Precise GPS Setting can drain battery faster" +
+            "\n     ExtremelyPrecise: update on 2 meters" +
+            "\n     Precise: update on 6 meters" +
+            "\n     Normal: update on 10 meters" +
+            "\n     BatterySaveMode: update on 20 meters")]
+        public GPSPrecisionSetting precisionSetting = GPSPrecisionSetting.Precise;
         [Tooltip("Maximum wait time to wait gps service initialisation (seconds)")] [Range(1, 10)] public float maxWaitTime = 5f;
         [Tooltip("Maximum wait time to retry to initialise gps service (seconds)")]  [SerializeField] [Range(5, 15)] private float retryTime = 10f;
 
@@ -63,7 +76,21 @@ namespace MEasyGPS.Management
 
 
             //start location service before querying location
-            Input.location.Start(6f,6f);
+            switch(precisionSetting)
+            {
+                case GPSPrecisionSetting.ExtremelyPrecise:
+                    Input.location.Start(2f, 2f);
+                    break;
+                case GPSPrecisionSetting.Precise:
+                    Input.location.Start(6f, 6f);
+                    break;
+                case GPSPrecisionSetting.Normal:
+                    Input.location.Start(10f, 10f);
+                    break;
+                case GPSPrecisionSetting.BatterySaveMode:
+                    Input.location.Start(20f, 20f);
+                    break;
+            }
 
             Input.compass.enabled = true;
 

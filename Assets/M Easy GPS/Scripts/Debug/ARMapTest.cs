@@ -70,9 +70,9 @@ namespace MEasyGPS.Utils
                 DiffMeters(Playerlatitude, Playerlongtitude, objectPlacers[i].latitude, objectPlacers[i].longtitude, out diffLatMet, out diffLonMet);
 
                 if (Mathf.Abs((float)diffLatMet) < 100 && Mathf.Abs((float)diffLonMet) < 100)
-                {
                     targetTransforms[i].anchoredPosition = new Vector3((float)diffLonMet, (float)diffLatMet);
-                }
+                else
+                    targetTransforms[i].anchoredPosition = Vector3.zero;
             }
 
             magneticDirectionTransform.rotation = Quaternion.Euler(0, 0, (float)-CurrentMagneticHeading);

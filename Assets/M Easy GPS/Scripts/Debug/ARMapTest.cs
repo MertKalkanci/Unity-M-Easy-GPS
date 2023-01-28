@@ -20,7 +20,7 @@ namespace MEasyGPS.Utils
         [SerializeField] private DebugMode debugMode;
         [SerializeField] private double latitudeMeterConstant = 111320;
         [SerializeField] private double targetLatitude, targetLongitude;
-        [SerializeField] private string TargetTag = "DebugTargetLocation", DirectionTrueTag = "DebugDirectionTrue", DirectionMagneticTag = "DebugDirectionMagnetic", DebugTextTag = "DebugInfoText";
+        [SerializeField] private string DirectionTrueTag = "DebugDirectionTrue", DirectionMagneticTag = "DebugDirectionMagnetic", DebugTextTag = "DebugInfoText";
 
         void Start()
         {
@@ -31,7 +31,7 @@ namespace MEasyGPS.Utils
 
             if (trueDirectionTransform == null || magneticDirectionTransform == null || debugText == null)
             {
-                Debug.Log("Error Finding Target transforms found with tag: ' " + TargetTag + " ' , Destroying This Script Instance...");
+                Debug.Log("Error Finding Target transforms found with tags \nDestroying This Script Instance...");
                 Destroy(this);
             }
 

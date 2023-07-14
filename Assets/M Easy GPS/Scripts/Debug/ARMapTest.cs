@@ -44,9 +44,9 @@ namespace MEasyGPS.Utils
             {
                 if (targetTransforms != null || targetTransforms.Length != 0)
                 {
-                    foreach (Transform target in targetTransforms)
+                    foreach (RectTransform target in targetTransforms)
                     {
-                        Destroy(target.gameObject);
+                        Destroy(target);
                     }
                 }
             }

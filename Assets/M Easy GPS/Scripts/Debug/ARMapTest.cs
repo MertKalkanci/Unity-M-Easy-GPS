@@ -46,7 +46,7 @@ namespace MEasyGPS.Utils
                 {
                     foreach (RectTransform target in targetTransforms)
                     {
-                        Destroy(target);
+                        Destroy(target.gameObject);
                     }
                 }
             }

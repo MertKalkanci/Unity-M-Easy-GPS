@@ -37,9 +37,10 @@ namespace MEasyGPS.Utils
 
             UpdatePlacers();
         }
+
         public void UpdatePlacers()
         {
-            if (targetTransforms != null)
+            if (targetTransforms != null || targetTransforms.Length != 0)
             {
                 foreach (Transform target in targetTransforms)
                 {
@@ -48,7 +49,7 @@ namespace MEasyGPS.Utils
             }
 
             objectPlacers = FindObjectsOfType<GPSObjectPlace>();
-            if (objectPlacers == null)
+            if (objectPlacers == null || objectPlacers.Length == 0)
                 return;
 
 
@@ -61,6 +62,7 @@ namespace MEasyGPS.Utils
             targetLatitude = objectPlacers[0].latitude;
             targetLongitude = objectPlacers[0].longtitude;
         }
+
         void Update()
         {
             if (debugMode == DebugMode.None)

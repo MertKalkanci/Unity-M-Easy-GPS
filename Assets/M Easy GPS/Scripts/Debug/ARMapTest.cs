@@ -40,15 +40,19 @@ namespace MEasyGPS.Utils
 
         public void UpdatePlacers()
         {
-            if (objectPlacers == null || objectPlacers.Length == 0)
-                return;
-
-            if (targetTransforms != null || targetTransforms.Length != 0)
+            try
             {
-                foreach (Transform target in targetTransforms)
+                if (targetTransforms != null || targetTransforms.Length != 0)
                 {
-                    Destroy(target.gameObject);
+                    foreach (Transform target in targetTransforms)
+                    {
+                        Destroy(target.gameObject);
+                    }
                 }
+            }
+            catch (Exception e)
+            {
+                Debug.Log("Error : " + e + "\n Handled");
             }
 
             objectPlacers = FindObjectsOfType<GPSObjectPlace>();

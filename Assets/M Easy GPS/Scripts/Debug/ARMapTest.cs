@@ -40,6 +40,9 @@ namespace MEasyGPS.Utils
 
         public void UpdatePlacers()
         {
+            if (objectPlacers == null || objectPlacers.Length == 0)
+                return;
+
             if (targetTransforms != null || targetTransforms.Length != 0)
             {
                 foreach (Transform target in targetTransforms)

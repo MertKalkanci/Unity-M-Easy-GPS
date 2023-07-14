@@ -33,11 +33,7 @@ Project version is Unity2022.1.8f1 but "M Easy GPS" API is compatible with Unity
 
 ## Download
 
-Download the project from releases. 
-
-Or
-
-Open Package Manager -> Add Package From Git URL -> https://github.com/MertKalkanci/Unity-M-Easy-GPS.git
+Download the project from releases or download source code. 
 
 ## Try The Samples !
 

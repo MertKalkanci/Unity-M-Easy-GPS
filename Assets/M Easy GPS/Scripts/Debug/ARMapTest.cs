@@ -39,7 +39,7 @@ namespace MEasyGPS.Utils
         }
         public void UpdatePlacers()
         {
-            if (targetTransforms.Length > 0)
+            if (targetTransforms != null)
             {
                 foreach (Transform target in targetTransforms)
                 {
@@ -48,6 +48,9 @@ namespace MEasyGPS.Utils
             }
 
             objectPlacers = FindObjectsOfType<GPSObjectPlace>();
+            if (objectPlacers == null)
+                return;
+
 
             targetTransforms = new RectTransform[objectPlacers.Length];
             for (int i = 0; i < objectPlacers.Length; i++)

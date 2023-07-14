@@ -37,7 +37,7 @@ Download the project from releases.
 
 Or
 
-Open Package Manager -> Add Package From Git URL -> https://github.com/MertKalkanci/Unity-M-Easy-GPS.git?path=Assets/M Easy GPS
+Open Package Manager -> Add Package From Git URL -> https://github.com/MertKalkanci/Unity-M-Easy-GPS.git
 
 ## Try The Samples !
 

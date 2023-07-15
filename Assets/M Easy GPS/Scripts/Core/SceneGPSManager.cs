@@ -9,10 +9,14 @@ namespace MEasyGPS.Management
     [RequireComponent(typeof(Initialisaton))]
     public class SceneGPSManager : MonoBehaviour
     {
-        public double latitude, longtitude;
-        public float altitude, horizontalAccuracy,
-            magneticHeading, trueHeading, headingAccuracy;
-        [Tooltip("Experimental location update ping")] public float locationPing;
+        public double latitude { get; private set; }
+        public double longtitude { get; private set; }
+        public float altitude { get; private set; }
+        public float horizontalAccuracy { get; private set; }
+        public float magneticHeading { get; private set; }
+        public float trueHeading { get; private set; }
+        public float headingAccuracy { get; private set; }
+        [Tooltip("Experimental location update ping")] public float locationPing { get; private set; }
 
         private Initialisaton init;
         private void Awake()

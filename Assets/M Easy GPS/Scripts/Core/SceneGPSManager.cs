@@ -6,9 +6,9 @@ using MEasyGPS.Management;
 
 namespace MEasyGPS.Management
 {
-    [RequireComponent(typeof(Initialisaton))]
     public class SceneGPSManager : MonoBehaviour
     {
+        public static SceneGPSManager instance;
         public double latitude { get; private set; }
         public double longtitude { get; private set; }
         public float altitude { get; private set; }
@@ -21,6 +21,11 @@ namespace MEasyGPS.Management
         private Initialisaton init;
         private void Awake()
         {
+            if (instance)
+                Destroy(this);
+
+            instance = this;
+
             DontDestroyOnLoad(this.gameObject);
             try
             {

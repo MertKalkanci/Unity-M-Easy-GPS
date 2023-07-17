@@ -6,6 +6,7 @@ using MEasyGPS.Management;
 
 namespace MEasyGPS.Management
 {
+    [RequireComponent(typeof(Initialisaton))]
     public class SceneGPSManager : MonoBehaviour
     {
         public static SceneGPSManager instance;
